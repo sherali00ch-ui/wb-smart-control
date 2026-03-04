@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WB Smart Control — Products</title>
+  <style>
+    :root{--bg:#f3f6fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--brand:#2f3b52;
+    --ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--shadow:0 10px 30px rgba(0,0,0,.08);--r:16px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:linear-gradient(135deg,#111827,#2f3b52);color:#fff;padding:16px}
+    .wrap{max-width:1300px;margin:0 auto;padding:16px}
+    .nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .brand{font-weight:800}
+    .menu{display:flex;gap:8px;flex-wrap:wrap}
+    .menu a{color:#fff;text-decoration:none;padding:8px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-size:13px}
+    .menu a.active{background:rgba(255,255,255,.18)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-top:14px}
+    h1{margin:0;font-size:18px}
+    .hint{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{border:0;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
+    .btn{background:var(--brand);color:#fff}
+    .btn2{background:#eef2ff;color:#111827}
+    .btn3{background:#fee2e2;color:#7f1d1d}
+    table{width:100%;border-collapse:collapse;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid var(--line);font-size:13px;vertical-align:middle}
+    th{background:#f8fafc;color:#374151;text-align:left;position:sticky;top:0}
+    tr:last-child td{border-bottom:0}
+    .right{text-align:right}
+    .tinput{width:100%;min-width:110px;padding:10px 11px;border:1px solid var(--line);border-radius:12px;font-size:14px;outline:none;background:#fff}
+    .nameInput{min-width:220px}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+    @media (max-width:1000px){.kpi{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:560px){.kpi{grid-template-columns:1fr}}
+    .kpiBox{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+    .kpiBox .name{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .kpiBox .val{font-size:20px;font-weight:800}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)} .muted{color:var(--muted)}
+    .scroll{overflow:auto;max-height:560px;border-radius:14px}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">WB Smart Control</div>
+    <div class="menu">
+      <a href="index.html">Dashboard</a>
+      <a href="calculator.html">Calculator</a>
+      <a class="active" href="products.html">Products</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Products (Таблица товаров)</h1>
+    <p class="hint">Илова кун товарҳоро. Сайт худкор нигоҳ медорад (LocalStorage). Натиҷа: Profit/шт, ROI, Маржа.</p>
+
+    <div class="actions">
+      <button class="btn2" onclick="addRow()">+ Илова товар</button>
+      <button class="btn" onclick="recalc()">Ҳисоб кардан</button>
+      <button class="btn2" onclick="exportCSV()">Export CSV</button>
+      <button class="btn3" onclick="resetAll()">Очистить</button>
+    </div>
+
+    <div class="kpi">
+      <div class="kpiBox"><div class="name">Total Profit (сумма Profit/шт)</div><div class="val" id="kTotal">—</div></div>
+      <div class="kpiBox"><div class="name">Average ROI</div><div class="val" id="kRoi">—</div></div>
+      <div class="kpiBox"><div class="name">Products</div><div class="val" id="kCount">—</div></div>
+      <div class="kpiBox"><div class="name">Plus / Minus</div><div class="val" id="kPM">—</div></div>
+    </div>
+  </div>
+
+  <div class="card scroll">
+    <table>
+      <thead>
+        <tr>
+          <th style="min-width:260px">Product</th>
+          <th>Buy ₽</th>
+          <th>Sell ₽</th>
+          <th>Commission %</th>
+          <th>Tax %</th>
+          <th>Buyout %</th>
+          <th>Ship to ₽</th>
+          <th>Pack ₽</th>
+          <th>Ship back ₽</th>
+          <th>Storage ₽</th>
+          <th>Writeoff %</th>
+          <th class="right">Profit/шт</th>
+          <th class="right">ROI</th>
+          <th class="right">Маржа</th>
+          <th class="right">Break-even ₽</th>
+          <th>Del</th>
+        </tr>
+      </thead>
+      <tbody id="tb"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const KEY="wb_products_v1";
+
+  const clampPct=p=>Math.max(0,Math.min(100,p||0));
+  const num=v=>{const x=parseFloat(v);return Number.isFinite(x)?x:0;}
+  const rub=v=>Number.isFinite(v)?(v.toFixed(2)+" ₽"):"—";
+  const pct=v=>Number.isFinite(v)?(v.toFixed(2)+"%"):"—";
+
+  function defaultRow(){
+    return {
+      name:"",
+      buy:0,sell:0,
+      commission:15,tax:6,
+      buyout:90,
+      shipTo:0,pack:0,shipBack:0,storage:0,
+      writeoff:2
+    };
+  }
+
+  let rows = load() || [defaultRow(), defaultRow(), defaultRow()];
+
+  function save(){ localStorage.setItem(KEY, JSON.stringify(rows)); }
+  function load(){
+    const raw=localStorage.getItem(KEY);
+    if(!raw) return null;
+    try{return JSON.parse(raw);}catch(e){return null;}
+  }
+
+  function render(){
+    const tb=document.getElementById("tb");
+    tb.innerHTML="";
+    rows.forEach((r,i)=>{
+      const tr=document.createElement("tr");
+      tr.innerHTML=`
+        <td><input class="tinput nameInput" data-i="${i}" data-k="name" placeholder="Товар" value="${escAttr(r.name)}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="buy" type="number" value="${r.buy}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="sell" type="number" value="${r.sell}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="commission" type="number" value="${r.commission}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="tax" type="number" value="${r.tax}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="buyout" type="number" value="${r.buyout}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="shipTo" type="number" value="${r.shipTo}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="pack" type="number" value="${r.pack}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="shipBack" type="number" value="${r.shipBack}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="storage" type="number" value="${r.storage}"></td>
+        <td><input class="tinput" data-i="${i}" data-k="writeoff" type="number" value="${r.writeoff}"></td>
+
+        <td class="right" id="p_${i}">—</td>
+        <td class="right" id="roi_${i}">—</td>
+        <td class="right" id="m_${i}">—</td>
+        <td class="right" id="be_${i}">—</td>
+        <td><button class="btn3" onclick="delRow(${i})">X</button></td>
+      `;
+      tb.appendChild(tr);
+    });
+
+    tb.querySelectorAll("input").forEach(inp=>{
+      inp.addEventListener("input",(e)=>{
+        const i=parseInt(e.target.dataset.i,10);
+        const k=e.target.dataset.k;
+        rows[i][k] = (k==="name") ? e.target.value : num(e.target.value);
+        save();
+      });
+    });
+  }
+
+  function escAttr(s){
+    return (s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
+
+  function calcOne(r){
+    const B = clampPct(r.buyout||100)/100;
+    if(B<=0) return {profit:NaN,roi:NaN,margin:NaN,be:NaN};
+
+    const sell=num(r.sell), buy=num(r.buy);
+    const commR=clampPct(r.commission)/100;
+    const taxR=clampPct(r.tax)/100;
+    const wR=clampPct(r.writeoff)/100;
+
+    const revenue=sell;
+    const commissionRub=revenue*commR;
+    const taxRub=revenue*taxR;
+
+    const returnedPerSold=(1-B)/B;
+
+    // Balanced logic (same as calculator balanced)
+    const shipTo = num(r.shipTo)/B;
+    const pack   = num(r.pack)/B;
+    const back   = num(r.shipBack)*returnedPerSold;
+    const writeoff = buy*wR*returnedPerSold;
+    const storage = num(r.storage);
+
+    const totalCosts = buy + commissionRub + taxRub + shipTo + pack + back + writeoff + storage;
+    const profit = revenue - totalCosts;
+
+    const roi = buy>0 ? (profit/buy)*100 : NaN;
+    const margin = revenue>0 ? (profit/revenue)*100 : NaN;
+
+    const denom = (1-(commR+taxR));
+    const fixedPart = totalCosts - commissionRub - taxRub;
+    const be = denom>0 ? (fixedPart/denom) : NaN;
+
+    return {profit,roi,margin,be};
+  }
+
+  function recalc(){
+    let total=0, roiSum=0, roiCnt=0, plus=0, minus=0;
+
+    rows.forEach((r,i)=>{
+      const out=calcOne(r);
+      document.getElementById("p_"+i).textContent = Number.isFinite(out.profit)?rub(out.profit):"—";
+      document.getElementById("roi_"+i).textContent = Number.isFinite(out.roi)?pct(out.roi):"—";
+      document.getElementById("m_"+i).textContent = Number.isFinite(out.margin)?pct(out.margin):"—";
+      document.getElementById("be_"+i).textContent = Number.isFinite(out.be)?rub(out.be):"—";
+
+      if(Number.isFinite(out.profit)){ total += out.profit; (out.profit>=0?plus++:minus++); }
+      if(Number.isFinite(out.roi)){ roiSum += out.roi; roiCnt++; }
+    });
+
+    const roiAvg = roiCnt? (roiSum/roiCnt) : NaN;
+
+    document.getElementById("kTotal").textContent = rub(total);
+    document.getElementById("kTotal").className = "val " + (total>=0?"ok":"bad");
+    document.getElementById("kRoi").textContent = Number.isFinite(roiAvg)?pct(roiAvg):"—";
+    document.getElementById("kCount").textContent = rows.length;
+    document.getElementById("kPM").textContent = `${plus} / ${minus}`;
+
+    save();
+  }
+
+  function addRow(){
+    if(rows.length>=20){ alert("Максимум 20 товар дар ин версия"); return; }
+    rows.push(defaultRow());
+    save();
+    render();
+  }
+  function delRow(i){
+    rows.splice(i,1);
+    save();
+    render();
+    recalc();
+  }
+
+  function exportCSV(){
+    recalc();
+    const headers=["Name","Buy","Sell","Commission","Tax","Buyout","ShipTo","Pack","ShipBack","Storage","Writeoff","Profit","ROI","Margin","BreakEven"];
+    const lines=[headers.join(",")];
+    rows.forEach(r=>{
+      const out=calcOne(r);
+      lines.push([
+        csv(r.name||""),
+        num(r.buy),num(r.sell),clampPct(r.commission),clampPct(r.tax),clampPct(r.buyout),
+        num(r.shipTo),num(r.pack),num(r.shipBack),num(r.storage),clampPct(r.writeoff),
+        Number.isFinite(out.profit)?out.profit.toFixed(2):"",
+        Number.isFinite(out.roi)?out.roi.toFixed(2):"",
+        Number.isFinite(out.margin)?out.margin.toFixed(2):"",
+        Number.isFinite(out.be)?out.be.toFixed(2):""
+      ].join(","));
+    });
+    const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url; a.download="wb-products.csv";
+    document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+  }
+  function csv(s){ return `"${String(s).replaceAll('"','""')}"`; }
+
+  function resetAll(){
+    if(!confirm("Ҳама маълумот пок шавад?")) return;
+    localStorage.removeItem(KEY);
+    rows=[defaultRow(),defaultRow(),defaultRow()];
+    render(); recalc();
+  }
+
+  render();
+  recalc();
+</script>
+
+</body>
+</html>
