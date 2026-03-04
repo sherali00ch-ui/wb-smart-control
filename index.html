@@ -1,332 +1,200 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>WB Smart Control — v1.3 (Balanced)</title>
-<style>
-  :root{--bg:#f3f6fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--brand:#2f3b52;
-  --ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--shadow:0 10px 30px rgba(0,0,0,.08);--r:16px;}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
-  header{background:linear-gradient(135deg,#111827,#2f3b52);color:#fff;padding:20px 16px}
-  .wrap{max-width:1200px;margin:0 auto;padding:16px}
-  h1{margin:0;font-size:20px}
-  .sub{margin:6px 0 0;color:rgba(255,255,255,.8);font-size:13px}
-  .grid{display:grid;grid-template-columns:1.15fr .85fr;gap:14px;margin-top:14px}
-  @media (max-width:980px){.grid{grid-template-columns:1fr}}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:14px}
-  .card h2{margin:0 0 10px;font-size:16px}
-  .hint{margin:0 0 12px;color:var(--muted);font-size:13px;line-height:1.35}
-  .form{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  @media (max-width:620px){.form{grid-template-columns:1fr}}
-  .rowfull{grid-column:1/-1}
-  label{display:block;margin:0 0 6px;font-size:12px;color:var(--muted)}
-  .field{display:flex;gap:8px;align-items:center}
-  input,select{flex:1;padding:10px 11px;border:1px solid var(--line);border-radius:12px;font-size:14px;outline:none;background:#fff}
-  .unit{min-width:56px;text-align:center;padding:10px;border:1px solid var(--line);border-radius:12px;background:#fafafa;color:#4b5563;font-size:13px}
-  .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
-  button{border:0;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
-  .btn{background:var(--brand);color:#fff}
-  .btn2{background:#eef2ff;color:#111827}
-  .btn3{background:#fee2e2;color:#7f1d1d}
-  .kpi{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  @media (max-width:620px){.kpi{grid-template-columns:1fr}}
-  .kpiBox{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
-  .kpiBox .name{font-size:12px;color:var(--muted);margin-bottom:6px}
-  .kpiBox .val{font-size:20px;font-weight:800}
-  .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)} .muted{color:var(--muted)}
-  .status{margin-top:10px;display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:#fff;width:fit-content}
-  .dot{width:10px;height:10px;border-radius:50%;background:#9ca3af}
-  table{width:100%;border-collapse:collapse;margin-top:10px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
-  th,td{padding:9px;border-bottom:1px solid var(--line);font-size:13px}
-  th{background:#f8fafc;color:#374151;text-align:left}
-  tr:last-child td{border-bottom:0}
-  .right{text-align:right}
-  .note{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.35}
-  .checks{display:flex;gap:14px;flex-wrap:wrap;margin-top:6px}
-  .checks label{display:flex;gap:8px;align-items:center;margin:0;color:var(--text);font-size:13px}
-</style>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WB Smart Control — Главная</title>
+  <style>
+    :root{--bg:#f3f6fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--brand:#2f3b52;
+    --ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--shadow:0 10px 30px rgba(0,0,0,.08);--r:16px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:linear-gradient(135deg,#111827,#2f3b52);color:#fff;padding:16px}
+    .wrap{max-width:1200px;margin:0 auto;padding:16px}
+    .nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .brand{font-weight:800}
+    .menu{display:flex;gap:8px;flex-wrap:wrap}
+    .menu a{color:#fff;text-decoration:none;padding:8px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-size:13px}
+    .menu a.active{background:rgba(255,255,255,.18)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-top:14px}
+    h1{margin:0;font-size:18px}
+    .hint{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+    @media (max-width:1000px){.kpi{grid-template-columns:repeat(2,1fr)}}
+    @media (max-width:560px){.kpi{grid-template-columns:1fr}}
+    .kpiBox{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+    .kpiBox .name{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .kpiBox .val{font-size:20px;font-weight:800}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)} .muted{color:var(--muted)}
+    table{width:100%;border-collapse:collapse;margin-top:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid var(--line);font-size:13px}
+    th{background:#f8fafc;color:#374151;text-align:left}
+    tr:last-child td{border-bottom:0}
+    .right{text-align:right}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}
+    button{border:0;border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer}
+    .btn{background:var(--brand);color:#fff}
+    .btn2{background:#eef2ff;color:#111827}
+    .btn3{background:#fee2e2;color:#7f1d1d}
+  </style>
 </head>
 <body>
 <header>
-  <div class="wrap">
-    <h1>WB Smart Control — v1.3</h1>
-    <div class="sub">Balanced ҳисоб: нарх “ғайри баланд” шавад. Режимҳо: Strict / Balanced / Soft.</div>
+  <div class="wrap nav">
+    <div class="brand">WB Smart Control</div>
+    <div class="menu">
+      <a class="active" href="index.html">Главная</a>
+      <a href="calculator.html">Калькулятор</a>
+      <a href="products.html">Товары</a>
+    </div>
   </div>
 </header>
 
 <div class="wrap">
-  <div class="grid">
-    <div class="card">
-      <h2>Форма</h2>
-      <p class="hint"><b>WB Balanced</b> — тавсия. Он доставка “туда”-ро бо 1/B мегирад, лекин хранение ва списание/обратно опционалӣ аст.</p>
+  <div class="card">
+    <h1>Главная (Dashboard)</h1>
+    <p class="hint">Данные берутся из раздела <b>Товары</b>. Добавь товары — и здесь появится статистика.</p>
 
-      <div class="form">
-        <div class="rowfull">
-          <label>Наименование товара</label>
-          <input id="name" placeholder="Мисол: Триммер / Весы / Термос">
-        </div>
-
-        <div class="rowfull">
-          <label>Режим расчёта</label>
-          <select id="mode">
-            <option value="balanced">WB Balanced (тавсия)</option>
-            <option value="strict">Per Sold (строгий, 1/B барои ҳама заказ-хароҷот)</option>
-            <option value="soft">Per Order (мулоим, пер заказ)</option>
-          </select>
-        </div>
-
-        <div>
-          <label>Цена закупки</label>
-          <div class="field"><input id="buy" type="number" placeholder="120"><div class="unit">₽</div></div>
-        </div>
-        <div>
-          <label>Цена продажи</label>
-          <div class="field"><input id="sell" type="number" placeholder="299"><div class="unit">₽</div></div>
-        </div>
-
-        <div>
-          <label>Процент выкупа</label>
-          <div class="field"><input id="buyout" type="number" placeholder="85"><div class="unit">%</div></div>
-        </div>
-
-        <div>
-          <label>Комиссия маркетплейса</label>
-          <div class="field"><input id="commission" type="number" placeholder="15"><div class="unit">%</div></div>
-        </div>
-
-        <div>
-          <label>Процент налога</label>
-          <div class="field"><input id="tax" type="number" placeholder="6"><div class="unit">%</div></div>
-        </div>
-
-        <div>
-          <label>Доставка до клиента</label>
-          <div class="field"><input id="shipTo" type="number" placeholder="45"><div class="unit">₽</div></div>
-        </div>
-
-        <div>
-          <label>Доставка обратно</label>
-          <div class="field"><input id="shipBack" type="number" placeholder="20"><div class="unit">₽</div></div>
-        </div>
-
-        <div class="rowfull">
-          <label>Упаковка/маркировка/доставка</label>
-          <div class="field"><input id="pack" type="number" placeholder="10"><div class="unit">₽</div></div>
-        </div>
-
-        <div>
-          <label>Хранение на складах</label>
-          <div class="field"><input id="storage" type="number" placeholder="5"><div class="unit">₽</div></div>
-        </div>
-
-        <div>
-          <label>Списание</label>
-          <div class="field"><input id="writeoff" type="number" placeholder="2"><div class="unit">%</div></div>
-        </div>
-
-        <div class="rowfull">
-          <div class="checks">
-            <label><input type="checkbox" id="useBack" checked> Ҳисоб кун “Доставка обратно”</label>
-            <label><input type="checkbox" id="useWriteoff" checked> Ҳисоб кун “Списание”</label>
-            <label><input type="checkbox" id="useStorage" checked> Ҳисоб кун “Хранение”</label>
-          </div>
-        </div>
-
-        <div class="rowfull">
-          <label>Желаемая прибыль за месяц</label>
-          <div class="field"><input id="targetMonth" type="number" placeholder="50000"><div class="unit">₽</div></div>
-        </div>
-      </div>
-
-      <div class="actions">
-        <button class="btn" id="btnCalc">Ҳисоб кардан</button>
-        <button class="btn2" id="btnSave">Сохранить</button>
-        <button class="btn3" id="btnReset">Очистить</button>
-      </div>
-
-      <div class="note">
-        Агар “нарх баланд баромад” — режимро ба <b>WB Balanced</b> ё <b>Soft</b> гузор ва checkboxes-ро мувофиқ кун.
-      </div>
+    <div class="actions">
+      <button class="btn2" onclick="location.href='products.html'">Открыть «Товары»</button>
+      <button class="btn2" onclick="location.href='calculator.html'">Открыть «Калькулятор»</button>
+      <button class="btn" onclick="refresh()">Обновить</button>
+      <button class="btn3" onclick="resetAll()">Сбросить данные</button>
     </div>
 
-    <div class="card">
-      <h2>Натиҷаҳо</h2>
-
-      <div class="kpi">
-        <div class="kpiBox"><div class="name">Чистая прибыль</div><div class="val" id="kProfit">—</div></div>
-        <div class="kpiBox"><div class="name">Маржа</div><div class="val" id="kMargin">—</div></div>
-        <div class="kpiBox"><div class="name">ROI</div><div class="val" id="kRoi">—</div></div>
-        <div class="kpiBox"><div class="name">Break-even цена</div><div class="val" id="kBE">—</div></div>
-      </div>
-
-      <div class="status"><span class="dot" id="dot"></span><span id="status" class="muted">Статус: интизор…</span></div>
-
-      <div class="kpi" style="margin-top:10px">
-        <div class="kpiBox"><div class="name">Сколько продаж нужно в месяц</div><div class="val" id="kNeed">—</div></div>
-        <div class="kpiBox"><div class="name">Прибыль при 100 продажах</div><div class="val" id="kP100">—</div></div>
-      </div>
-
-      <table>
-        <thead><tr><th>Детализация</th><th class="right">Сумма</th></tr></thead>
-        <tbody id="rows"><tr><td class="muted">—</td><td class="right muted">—</td></tr></tbody>
-      </table>
-
-      <div class="note" id="noteName"></div>
+    <div class="kpi">
+      <div class="kpiBox"><div class="name">Товаров</div><div class="val" id="kCount">—</div></div>
+      <div class="kpiBox"><div class="name">В плюс / В минус</div><div class="val" id="kPM">—</div></div>
+      <div class="kpiBox"><div class="name">Средний ROI</div><div class="val" id="kRoi">—</div></div>
+      <div class="kpiBox"><div class="name">Сумма прибыли (по шт)</div><div class="val" id="kProfit">—</div></div>
     </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Топ товаров (по прибыли/шт)</th>
+          <th class="right">Прибыль/шт</th>
+          <th class="right">ROI</th>
+          <th class="right">Маржа</th>
+        </tr>
+      </thead>
+      <tbody id="topRows">
+        <tr><td class="muted">Нет данных</td><td class="right muted">—</td><td class="right muted">—</td><td class="right muted">—</td></tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
 <script>
-  const KEY="wb_smart_control_v1_3";
-  const $=id=>document.getElementById(id);
-  const num=v=>{const x=parseFloat(v);return Number.isFinite(x)?x:0;}
-  const clampPct=p=>Math.max(0,Math.min(100,p));
-  const money=v=>Number.isFinite(v)?(v.toFixed(2)+" ₽"):"—";
-  const pct=v=>Number.isFinite(v)?(v.toFixed(2)+"%"):"—";
+  const KEY = "WB_PRODUCTS_V2";
 
-  function getData(){
-    return {
-      name:$("name").value.trim(),
-      mode:$("mode").value,
-      buy:num($("buy").value),
-      sell:num($("sell").value),
-      buyout:clampPct(num($("buyout").value)||100),
-      commission:clampPct(num($("commission").value)),
-      tax:clampPct(num($("tax").value)),
-      shipTo:num($("shipTo").value),
-      shipBack:num($("shipBack").value),
-      pack:num($("pack").value),
-      storage:num($("storage").value),
-      writeoff:clampPct(num($("writeoff").value)),
-      targetMonth:num($("targetMonth").value),
-      useBack:$("useBack").checked,
-      useWriteoff:$("useWriteoff").checked,
-      useStorage:$("useStorage").checked
-    };
-  }
-  function setData(d){
-    $("name").value=d.name??"";
-    $("mode").value=d.mode??"balanced";
-    $("buy").value=d.buy??"";
-    $("sell").value=d.sell??"";
-    $("buyout").value=d.buyout??100;
-    $("commission").value=d.commission??0;
-    $("tax").value=d.tax??0;
-    $("shipTo").value=d.shipTo??0;
-    $("shipBack").value=d.shipBack??0;
-    $("pack").value=d.pack??0;
-    $("storage").value=d.storage??0;
-    $("writeoff").value=d.writeoff??0;
-    $("targetMonth").value=d.targetMonth??0;
-    $("useBack").checked=!!d.useBack;
-    $("useWriteoff").checked=!!d.useWriteoff;
-    $("useStorage").checked=!!d.useStorage;
-  }
-  function save(){localStorage.setItem(KEY,JSON.stringify(getData()));}
-  function load(){const raw=localStorage.getItem(KEY); if(!raw) return; try{setData(JSON.parse(raw));}catch(e){}}
-  function esc(s){return (s||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+  const clampPct = (p)=> Math.max(0, Math.min(100, p||0));
+  const num = (v)=> { const x=parseFloat(v); return Number.isFinite(x)?x:0; };
+  const rub = (v)=> Number.isFinite(v)?(v.toFixed(2)+" ₽"):"—";
+  const pct = (v)=> Number.isFinite(v)?(v.toFixed(2)+"%"):"—";
 
-  function setStatus(profit, roi){
-    let t,c,col;
-    if(profit<0){t="🔴 Зарар";c="bad";col="#dc2626";}
-    else if(roi<30){t="🟡 Паст";c="warn";col="#f59e0b";}
-    else {t="🟢 Хуб";c="ok";col="#16a34a";}
-    $("dot").style.background=col;
-    $("status").className=c;
-    $("status").textContent=t;
+  function loadProducts(){
+    const raw = localStorage.getItem(KEY);
+    if(!raw) return [];
+    try{
+      const arr = JSON.parse(raw);
+      return Array.isArray(arr) ? arr : [];
+    }catch(e){ return []; }
   }
 
-  function calculate(){
-    const d=getData();
-    const B=clampPct(d.buyout)/100;
-    if(B<=0){alert("Выкуп не может быть 0%");return;}
+  function calcOne(r){
+    const B = clampPct(r.buyout||100)/100;
+    if(B<=0) return {profit:NaN, roi:NaN, margin:NaN};
 
-    const commR=d.commission/100;
-    const taxR=d.tax/100;
-    const wR=d.writeoff/100;
+    const sell = num(r.sell);
+    const buy  = num(r.buy);
 
-    const revenue=d.sell;                 // per sold
-    const commissionRub=revenue*commR;
-    const taxRub=revenue*taxR;
+    const commR = clampPct(r.commission)/100;
+    const taxR  = clampPct(r.tax)/100;
+    const wR    = clampPct(r.writeoff)/100;
 
-    const returnedPerSold=(1-B)/B;
+    const revenue = sell;
+    const commissionRub = revenue * commR;
+    const taxRub = revenue * taxR;
 
-    let shipToCost=0, packCost=0, shipBackCost=0, writeoffLoss=0, storageCost=0;
+    const returnedPerSold = (1 - B) / B;
 
-    if(d.mode==="strict"){
-      shipToCost=d.shipTo/B;
-      packCost=d.pack/B;
-      shipBackCost=d.useBack ? d.shipBack*returnedPerSold : 0;
-      writeoffLoss=d.useWriteoff ? d.buy*wR*returnedPerSold : 0;
-      storageCost=d.useStorage ? d.storage : 0;
-    } else if(d.mode==="balanced"){
-      // Balanced: туда/упаковка scale by 1/B; остальное — по возвратам и опционально
-      shipToCost=d.shipTo/B;
-      packCost=d.pack/B;
-      shipBackCost=d.useBack ? d.shipBack*returnedPerSold : 0;
-      writeoffLoss=d.useWriteoff ? d.buy*wR*returnedPerSold : 0;
-      storageCost=d.useStorage ? d.storage : 0;
-    } else { // soft
-      shipToCost=d.shipTo;
-      packCost=d.pack;
-      shipBackCost=d.useBack ? d.shipBack*(1-B) : 0;
-      writeoffLoss=d.useWriteoff ? d.buy*wR*(1-B) : 0;
-      storageCost=d.useStorage ? d.storage : 0;
+    // Balanced model (как в калькуляторе)
+    const shipTo   = num(r.shipTo)/B;
+    const pack     = num(r.pack)/B;
+    const shipBack = num(r.shipBack) * returnedPerSold;
+    const writeoff = buy * wR * returnedPerSold;
+    const storage  = num(r.storage);
+
+    const totalCosts = buy + commissionRub + taxRub + shipTo + pack + shipBack + writeoff + storage;
+    const profit = revenue - totalCosts;
+
+    const roi = buy>0 ? (profit/buy)*100 : NaN;
+    const margin = revenue>0 ? (profit/revenue)*100 : NaN;
+
+    return {profit, roi, margin};
+  }
+
+  function refresh(){
+    const products = loadProducts();
+    const results = products.map(p=>{
+      const out = calcOne(p);
+      return {name: (p.name||"Товар"), ...out};
+    });
+
+    const count = results.length;
+    let plus=0, minus=0, profitSum=0, roiSum=0, roiCnt=0;
+
+    results.forEach(r=>{
+      if(Number.isFinite(r.profit)){
+        profitSum += r.profit;
+        if(r.profit>=0) plus++; else minus++;
+      }
+      if(Number.isFinite(r.roi)){ roiSum += r.roi; roiCnt++; }
+    });
+
+    const roiAvg = roiCnt ? (roiSum/roiCnt) : NaN;
+
+    document.getElementById("kCount").textContent = count;
+    document.getElementById("kPM").textContent = `${plus} / ${minus}`;
+    document.getElementById("kRoi").textContent = Number.isFinite(roiAvg)?pct(roiAvg):"—";
+    document.getElementById("kRoi").className = "val " + (Number.isFinite(roiAvg) ? (roiAvg>=30?"ok":"warn") : "muted");
+    document.getElementById("kProfit").textContent = rub(profitSum);
+    document.getElementById("kProfit").className = "val " + (profitSum>=0?"ok":"bad");
+
+    const top = results
+      .filter(r=>Number.isFinite(r.profit))
+      .sort((a,b)=>b.profit - a.profit)
+      .slice(0,5);
+
+    const tb = document.getElementById("topRows");
+    if(top.length===0){
+      tb.innerHTML = `<tr><td class="muted">Нет данных</td><td class="right muted">—</td><td class="right muted">—</td><td class="right muted">—</td></tr>`;
+      return;
     }
-
-    const totalCosts=d.buy + commissionRub + taxRub + shipToCost + packCost + shipBackCost + writeoffLoss + storageCost;
-    const profit=revenue-totalCosts;
-
-    const margin=revenue>0?(profit/revenue)*100:NaN;
-    const roi=d.buy>0?(profit/d.buy)*100:NaN;
-
-    // break-even price
-    const denom=(1-(commR+taxR));
-    const fixedPart= totalCosts - commissionRub - taxRub;
-    const breakEven= denom>0 ? (fixedPart/denom) : NaN;
-
-    const needSales=(profit>0 && d.targetMonth>0) ? Math.ceil(d.targetMonth/profit) : NaN;
-
-    $("kProfit").textContent=money(profit);
-    $("kProfit").className="val "+(profit>=0?"ok":"bad");
-    $("kMargin").textContent=pct(margin);
-    $("kRoi").textContent=pct(roi);
-    $("kBE").textContent=Number.isFinite(breakEven)?money(breakEven):"Нест";
-    $("kNeed").textContent=Number.isFinite(needSales)?(needSales+" продаж"):"—";
-    $("kP100").textContent=money(profit*100);
-
-    setStatus(profit, roi);
-
-    const rows=[
-      ["Доход (Цена продажи)", revenue],
-      ["Комиссия", commissionRub],
-      ["Налог", taxRub],
-      ["Закупка", d.buy],
-      ["Доставка до клиента", shipToCost],
-      ["Упаковка/маркировка/доставка", packCost],
-      ["Доставка обратно", shipBackCost],
-      ["Списание", writeoffLoss],
-      ["Хранение", storageCost],
-      ["Итого расходы", totalCosts],
-    ];
-    $("rows").innerHTML=rows.map(([n,v])=>`<tr><td>${esc(n)}</td><td class="right">${money(v)}</td></tr>`).join("");
-    $("noteName").innerHTML=d.name?`Товар: <b>${esc(d.name)}</b> · Режим: <b>${esc(d.mode)}</b>`:"";
-    save();
+    tb.innerHTML = top.map(r=>`
+      <tr>
+        <td>${escapeHtml(r.name)}</td>
+        <td class="right">${rub(r.profit)}</td>
+        <td class="right">${pct(r.roi)}</td>
+        <td class="right">${pct(r.margin)}</td>
+      </tr>
+    `).join("");
   }
 
   function resetAll(){
+    if(!confirm("Сбросить все данные товаров?")) return;
     localStorage.removeItem(KEY);
-    location.reload();
+    refresh();
   }
 
-  $("btnCalc").addEventListener("click", calculate);
-  $("btnSave").addEventListener("click", ()=>{save(); alert("Сохранено ✅");});
-  $("btnReset").addEventListener("click", ()=>{if(confirm("Очистить всё?")) resetAll();});
-  document.addEventListener("input", ()=>save());
+  function escapeHtml(s){
+    return String(s||"")
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  }
 
-  load();
+  refresh();
 </script>
 </body>
 </html>
