@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>WB Smart Control — Calculator</title>
+  <style>
+    :root{--bg:#f3f6fb;--card:#fff;--text:#111827;--muted:#6b7280;--line:#e5e7eb;--brand:#2f3b52;
+    --ok:#16a34a;--warn:#f59e0b;--bad:#dc2626;--shadow:0 10px 30px rgba(0,0,0,.08);--r:16px;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+    header{background:linear-gradient(135deg,#111827,#2f3b52);color:#fff;padding:16px}
+    .wrap{max-width:1100px;margin:0 auto;padding:16px}
+    .nav{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+    .brand{font-weight:800}
+    .menu{display:flex;gap:8px;flex-wrap:wrap}
+    .menu a{color:#fff;text-decoration:none;padding:8px 10px;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-size:13px}
+    .menu a.active{background:rgba(255,255,255,.18)}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:16px;margin-top:14px}
+    h1{margin:0;font-size:18px}
+    .hint{margin:8px 0 0;color:var(--muted);font-size:13px;line-height:1.35}
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    @media (max-width:700px){.form{grid-template-columns:1fr}}
+    .rowfull{grid-column:1/-1}
+    label{display:block;margin:0 0 6px;font-size:12px;color:var(--muted)}
+    .field{display:flex;gap:8px;align-items:center}
+    input,select{flex:1;padding:11px 12px;border:1px solid var(--line);border-radius:12px;font-size:14px;outline:none;background:#fff}
+    .unit{min-width:56px;text-align:center;padding:11px 10px;border:1px solid var(--line);border-radius:12px;background:#fafafa;color:#4b5563;font-size:13px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    button{border:0;border-radius:12px;padding:11px 14px;font-size:14px;cursor:pointer}
+    .btn{background:var(--brand);color:#fff}
+    .btn2{background:#eef2ff;color:#111827}
+    .kpi{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+    @media (max-width:700px){.kpi{grid-template-columns:1fr}}
+    .kpiBox{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+    .kpiBox .name{font-size:12px;color:var(--muted);margin-bottom:6px}
+    .kpiBox .val{font-size:20px;font-weight:800}
+    .ok{color:var(--ok)} .warn{color:var(--warn)} .bad{color:var(--bad)} .muted{color:var(--muted)}
+    table{width:100%;border-collapse:collapse;margin-top:12px;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+    th,td{padding:10px;border-bottom:1px solid var(--line);font-size:13px}
+    th{background:#f8fafc;color:#374151;text-align:left}
+    tr:last-child td{border-bottom:0}
+    .right{text-align:right}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="brand">WB Smart Control</div>
+    <div class="menu">
+      <a href="index.html">Dashboard</a>
+      <a class="active" href="calculator.html">Calculator</a>
+      <a href="products.html">Products</a>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="card">
+    <h1>Calculator (юнит-экономика)</h1>
+    <p class="hint">Режимро интихоб кун. Агар “нарх баланд” барояд — WB Balanced тавсия.</p>
+
+    <div class="form">
+      <div class="rowfull">
+        <label>Режим расчёта</label>
+        <select id="mode">
+          <option value="balanced">WB Balanced (тавсия)</option>
+          <option value="strict">Per Sold (строгий)</option>
+          <option value="soft">Per Order (мулоим)</option>
+        </select>
+      </div>
+
+      <div class="rowfull">
+        <label>Наименование товара</label>
+        <input id="name" placeholder="Мисол: Триммер / Весы / Термос">
+      </div>
+
+      <div>
+        <label>Цена закупки</label>
+        <div class="field"><input id="buy" type="number" placeholder="120"><div class="unit">₽</div></div>
+      </div>
+      <div>
+        <label>Цена продажи</label>
+        <div class="field"><input id="sell" type="number" placeholder="299"><div class="unit">₽</div></div>
+      </div>
+
+      <div>
+        <label>Процент выкупа</label>
+        <div class="field"><input id="buyout" type="number" placeholder="85"><div class="unit">%</div></div>
+      </div>
+      <div>
+        <label>Комиссия маркетплейса</label>
+        <div class="field"><input id="commission" type="number" placeholder="15"><div class="unit">%</div></div>
+      </div>
+
+      <div>
+        <label>Процент налога</label>
+        <div class="field"><input id="tax" type="number" placeholder="6"><div class="unit">%</div></div>
+      </div>
+      <div>
+        <label>Списание</label>
+        <div class="field"><input id="writeoff" type="number" placeholder="2"><div class="unit">%</div></div>
+      </div>
+
+      <div>
+        <label>Доставка до клиента</label>
+        <div class="field"><input id="shipTo" type="number" placeholder="45"><div class="unit">₽</div></div>
+      </div>
+      <div>
+        <label>Доставка обратно</label>
+        <div class="field"><input id="shipBack" type="number" placeholder="20"><div class="unit">₽</div></div>
+      </div>
+
+      <div class="rowfull">
+        <label>Упаковка/маркировка/доставка</label>
+        <div class="field"><input id="pack" type="number" placeholder="10"><div class="unit">₽</div></div>
+      </div>
+
+      <div class="rowfull">
+        <label>Хранение на складах</label>
+        <div class="field"><input id="storage" type="number" placeholder="5"><div class="unit">₽</div></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" onclick="calc()">Ҳисоб кардан</button>
+      <button class="btn2" onclick="save()">Сохранить</button>
+    </div>
+
+    <div class="kpi">
+      <div class="kpiBox"><div class="name">Чистая прибыль</div><div class="val" id="kProfit">—</div></div>
+      <div class="kpiBox"><div class="name">ROI</div><div class="val" id="kRoi">—</div></div>
+      <div class="kpiBox"><div class="name">Маржа</div><div class="val" id="kMargin">—</div></div>
+      <div class="kpiBox"><div class="name">Break-even цена</div><div class="val" id="kBE">—</div></div>
+    </div>
+
+    <table>
+      <thead><tr><th>Детализация</th><th class="right">Сумма</th></tr></thead>
+      <tbody id="rows"><tr><td class="muted">—</td><td class="right muted">—</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  const KEY="wb_calc_v1";
+  const clampPct=p=>Math.max(0,Math.min(100, p||0));
+  const num=v=>{const x=parseFloat(v);return Number.isFinite(x)?x:0;}
+  const fmtRub=v=>Number.isFinite(v)?(v.toFixed(2)+" ₽"):"—";
+  const fmtPct=v=>Number.isFinite(v)?(v.toFixed(2)+"%"):"—";
+
+  function get(){
+    return {
+      mode: document.getElementById("mode").value,
+      name: document.getElementById("name").value.trim(),
+      buy: num(document.getElementById("buy").value),
+      sell: num(document.getElementById("sell").value),
+      buyout: clampPct(num(document.getElementById("buyout").value)||100),
+      commission: clampPct(num(document.getElementById("commission").value)),
+      tax: clampPct(num(document.getElementById("tax").value)),
+      writeoff: clampPct(num(document.getElementById("writeoff").value)),
+      shipTo: num(document.getElementById("shipTo").value),
+      shipBack: num(document.getElementById("shipBack").value),
+      pack: num(document.getElementById("pack").value),
+      storage: num(document.getElementById("storage").value)
+    };
+  }
+  function set(d){
+    document.getElementById("mode").value=d.mode??"balanced";
+    document.getElementById("name").value=d.name??"";
+    document.getElementById("buy").value=d.buy??"";
+    document.getElementById("sell").value=d.sell??"";
+    document.getElementById("buyout").value=d.buyout??100;
+    document.getElementById("commission").value=d.commission??0;
+    document.getElementById("tax").value=d.tax??0;
+    document.getElementById("writeoff").value=d.writeoff??0;
+    document.getElementById("shipTo").value=d.shipTo??0;
+    document.getElementById("shipBack").value=d.shipBack??0;
+    document.getElementById("pack").value=d.pack??0;
+    document.getElementById("storage").value=d.storage??0;
+  }
+  function save(){
+    localStorage.setItem(KEY, JSON.stringify(get()));
+    alert("Сохранено ✅");
+  }
+  function load(){
+    const raw=localStorage.getItem(KEY);
+    if(!raw) return;
+    try{ set(JSON.parse(raw)); }catch(e){}
+  }
+
+  function calc(){
+    const d=get();
+    const B = clampPct(d.buyout)/100;
+    if(B<=0){alert("Выкуп не может быть 0%");return;}
+
+    const commR=d.commission/100;
+    const taxR=d.tax/100;
+    const wR=d.writeoff/100;
+
+    const revenue=d.sell;
+    const commissionRub=revenue*commR;
+    const taxRub=revenue*taxR;
+
+    const returnedPerSold=(1-B)/B;
+
+    let shipTo=0, pack=0, back=0, writeoff=0, storage=0;
+
+    if(d.mode==="strict" || d.mode==="balanced"){
+      shipTo = d.shipTo / B;
+      pack   = d.pack / B;
+      back   = d.shipBack * returnedPerSold;
+      writeoff = d.buy * wR * returnedPerSold;
+      storage  = d.storage;
+    } else { // soft
+      shipTo = d.shipTo;
+      pack   = d.pack;
+      back   = d.shipBack * (1-B);
+      writeoff = d.buy * wR * (1-B);
+      storage  = d.storage;
+    }
+
+    const totalCosts = d.buy + commissionRub + taxRub + shipTo + pack + back + writeoff + storage;
+    const profit = revenue - totalCosts;
+
+    const roi = d.buy>0 ? (profit/d.buy)*100 : NaN;
+    const margin = revenue>0 ? (profit/revenue)*100 : NaN;
+
+    const denom = (1-(commR+taxR));
+    const fixedPart = totalCosts - commissionRub - taxRub;
+    const be = denom>0 ? (fixedPart/denom) : NaN;
+
+    document.getElementById("kProfit").textContent = fmtRub(profit);
+    document.getElementById("kProfit").className = "val " + (profit>=0 ? "ok" : "bad");
+
+    document.getElementById("kRoi").textContent = fmtPct(roi);
+    document.getElementById("kRoi").className = "val " + (Number.isFinite(roi) ? (roi>=30 ? "ok" : "warn") : "muted");
+
+    document.getElementById("kMargin").textContent = fmtPct(margin);
+    document.getElementById("kBE").textContent = Number.isFinite(be) ? fmtRub(be) : "—";
+
+    const rows = [
+      ["Доход (Цена продажи)", revenue],
+      ["Комиссия", commissionRub],
+      ["Налог", taxRub],
+      ["Закупка", d.buy],
+      ["Доставка до клиента", shipTo],
+      ["Упаковка", pack],
+      ["Доставка обратно", back],
+      ["Списание", writeoff],
+      ["Хранение", storage],
+      ["Итого расходы", totalCosts],
+    ];
+    document.getElementById("rows").innerHTML = rows.map(([n,v]) =>
+      `<tr><td>${n}</td><td class="right">${fmtRub(v)}</td></tr>`
+    ).join("");
+
+    save();
+  }
+
+  load();
+</script>
+
+</body>
+</html>
